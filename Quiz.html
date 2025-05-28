@@ -5,17 +5,71 @@
   <title>Carte Quiz</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    html, body, #map {
+    html, body {
       height: 100%;
       margin: 0;
       padding: 0;
     }
+    body {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+    #controls {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      background: rgba(255,255,255,0.95);
+      z-index: 1000;
+      padding: 10px 0 5px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+    #map {
+      position: absolute;
+      top: 55px;
+      left: 0;
+      width: 100vw;
+      height: calc(100vh - 55px);
+      z-index: 1;
+    }
+    #compteur {
+      margin-right: 10px;
+    }
+    #villeInput {
+      width: 250px;
+      max-width: 90vw;
+    }
   </style>
 </head>
 <body>
+  <div id="controls">
+    <span id="compteur"></span>
+    <input id="villeInput" type="text" placeholder="Tapez le nom d'une ville..." autocomplete="off" style="display:none;" />
+    <label for="modePopulation" id="labelPopulation">
+      <input type="radio" name="modeQuiz" id="modePopulation" value="population" checked>
+      Population minimale :
+    </label>
+    <input type="number" id="minPopulation" value="1000" min="0" style="width:80px;" />
+    <label for="modeNbVilles" id="labelNbVilles">
+      <input type="radio" name="modeQuiz" id="modeNbVilles" value="nbvilles">
+      Nombre de villes :
+    </label>
+    <input type="number" id="nbVilles" value="100" min="1" style="width:80px; display:none;" />
+    <button id="startQuizBtn">Démarrer le quiz</button>
+    <button id="showQuizBtn">Montrer les villes</button>
+    <button id="restartQuizBtn" style="display:none;">Recommencer le quiz</button>
+    <button id="backToHomeBtn" style="display:none;">Faire un autre quiz</button>
+    <button id="endQuizBtn" style="display:none;">Mettre fin au quiz</button>
+  </div>
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="cities.js"></script>
   <script src="Quiz.js"></script>
 </body>
 </html>
