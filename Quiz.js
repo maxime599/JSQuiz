@@ -15,9 +15,13 @@ function initMap() {
     window._leaflet_map_instance.remove();
     document.getElementById('map').innerHTML = "";
   }
-  map = L.map('map').setView([20, 0], 3);
+  // Niveau de zoom par défaut
+  const defaultZoom = 3;
+  map = L.map('map', {
+    minZoom: 2 // Limite de dézoom
+  }).setView([20, 0], defaultZoom);
   window._leaflet_map_instance = map;
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap & Carto',
     subdomains: 'abcd',
     maxZoom: 19
@@ -26,9 +30,34 @@ function initMap() {
 initMap(); // Affiche la carte vide dès le début
 
 function toAscii(str) {
+  // Translitération russe
+  function translittererRusse(texte) {
+    const map = {
+      "А": "A", "а": "a", "Б": "B", "б": "b",
+      "В": "V", "в": "v", "Г": "G", "г": "g",
+      "Д": "D", "д": "d", "Е": "E", "е": "e",
+      "Ё": "E", "ё": "e", "Ж": "Zh", "ж": "zh",
+      "З": "Z", "з": "z", "И": "I", "и": "i",
+      "Й": "Y", "й": "y", "К": "K", "к": "k",
+      "Л": "L", "л": "l", "М": "M", "м": "m",
+      "Н": "N", "н": "n", "О": "O", "о": "o",
+      "П": "P", "п": "p", "Р": "R", "р": "r",
+      "С": "S", "с": "s", "Т": "T", "т": "t",
+      "У": "U", "у": "u", "Ф": "F", "ф": "f",
+      "Х": "Kh", "х": "kh", "Ц": "Ts", "ц": "ts",
+      "Ч": "Ch", "ч": "ch", "Ш": "Sh", "ш": "sh",
+      "Щ": "Shch", "щ": "shch", "Ы": "Y", "ы": "y",
+      "Э": "E", "э": "e", "Ю": "Yu", "ю": "yu",
+      "Я": "Ya", "я": "ya", "Ь": "", "ь": "", "Ъ": "", "ъ": ""
+    };
+    return texte.split('').map(char => map[char] ?? char).join('');
+  }
+
+  str = translittererRusse(str);
   return str
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
+    .replace(/-/g, " ") // Remplace les tirets par des espaces
     .replace(/[^a-zA-Z0-9 ]/g, "")
     .toLowerCase();
 }
@@ -38,14 +67,21 @@ let marqueurs = {};
 let villesTrouvees = new Set();
 let quizEnCours = false;
 let nomAsciiToVilles = {}; // Déclaration en haut du fichier
+let lastValidatedMarkers = []; // Ajout de cette ligne
 
 function getVillesSelectionnees() {
+  let data = window.villesData;
+  // Filtre par pays si besoin
+  if (document.getElementById('modePays').value === 'one') {
+    const code = document.getElementById('selectPays').value;
+    data = data.filter(v => v.address && v.address.country_code === code);
+  }
   if (document.getElementById('modePopulation').checked) {
     const minPop = parseInt(document.getElementById('minPopulation').value, 10);
-    return window.villesData.filter(v => v.population >= minPop);
+    return data.filter(v => v.population >= minPop);
   } else {
     const nbVilles = parseInt(document.getElementById('nbVilles').value, 10);
-    return window.villesData
+    return data
       .slice()
       .sort((a, b) => b.population - a.population)
       .slice(0, nbVilles);
@@ -73,6 +109,10 @@ document.getElementById('startQuizBtn').addEventListener('click', () => {
   document.getElementById('modeNbVilles').style.display = 'none';
   document.getElementById('endQuizBtn').style.display = '';
 
+  // Cache aussi les sélecteurs de pays
+  document.getElementById('modePays').style.display = 'none';
+  document.getElementById('selectPays').style.display = 'none';
+
   demarrerQuiz();
 });
 function demarrerQuiz() {
@@ -85,27 +125,41 @@ function demarrerQuiz() {
   // Ajoute les marqueurs pour chaque ville
   villes.forEach(ville => {
     let nom = (ville["name:fr"] || ville["name:en"] || ville.name || "");
-    if (!nom || ville.location[1] === undefined || ville.location[0] === undefined) return;
+    const nomLower = nom.toLowerCase();
+    const asciiNom = toAscii(nomLower);
 
-    const nomAscii = toAscii(nom);
+    if (!nomLower || ville.location[1] === undefined || ville.location[0] === undefined) return;
 
     const marker = L.circleMarker([ville.location[1], ville.location[0]], {
       radius: 1,
       color: 'red',
       fillColor: 'red',
       fillOpacity: 0.8,
-      _villeNom: nom // <-- ajoute cette ligne
+      _villeNom: nomLower
     }).addTo(map);
 
-    // On stocke tous les marqueurs pour ce nom ASCII
-    if (!nomAsciiToVilles[nomAscii]) nomAsciiToVilles[nomAscii] = [];
-    nomAsciiToVilles[nomAscii].push(marker);
+    if (!nomAsciiToVilles[asciiNom]) nomAsciiToVilles[asciiNom] = [];
+    nomAsciiToVilles[asciiNom].push(marker);
 
-    // Affiche le nom au survol SEULEMENT si la ville est validée
+    // Prépare le contenu de la popup (affichage avec majuscule)
+    let popupContent = nomLower.charAt(0).toUpperCase() + nomLower.slice(1);
+    if (asciiNom !== nomLower) {
+      popupContent = `${popupContent} <br><small>${asciiNom}</small>`;
+    }
+    marker.bindPopup(
+      `<div class="popup-ville">${popupContent}</div>`,
+      { className: 'popup-ville-container' }
+    );
+
+    // Popup au survol
     marker.on('mouseover', function() {
       if (villesTrouvees.has(marker)) {
+        let popupContent = nomLower.charAt(0).toUpperCase() + nomLower.slice(1);
+        if (asciiNom !== nomLower) {
+          popupContent = `${popupContent} <br><small>${asciiNom}</small>`;
+        }
         marker.bindPopup(
-          `<div class="popup-ville">${nom} <br><small>${toAscii(nom)}</small></div>`,
+          `<div class="popup-ville">${popupContent}</div>`,
           { className: 'popup-ville-container' }
         );
         marker.openPopup();
@@ -123,20 +177,36 @@ function demarrerQuiz() {
   updateCompteur();
 
   input.oninput = function () {
-    const saisie = toAscii(input.value.trim());
+    const saisie = toAscii(input.value.trim().toLowerCase());
     const markers = nomAsciiToVilles[saisie];
+  
+
     if (markers && markers.some(m => !villesTrouvees.has(m))) {
+      // Remet les anciens en vert
+      lastValidatedMarkers.forEach(marker => {
+        marker.setStyle({ color: 'green', fillColor: 'green', radius: 2 });
+      });
+      lastValidatedMarkers = [];
+
+      // Mets les nouveaux en jaune
       markers.forEach(marker => {
         if (!villesTrouvees.has(marker)) {
-          marker.setStyle({ color: 'green', fillColor: 'green', radius: 5 });
+          marker.setStyle({ color: 'yellow', fillColor: "yellow", radius: 2 , fillOpacity: 1});
           villesTrouvees.add(marker);
+          lastValidatedMarkers.push(marker);
+          const villeNom = marker.options._villeNom || '';
+          const asciiNom = toAscii(villeNom);
+          let popupContent = villeNom;
+          if (asciiNom !== villeNom.toLowerCase()) {
+            popupContent = `${villeNom} <br><small>${asciiNom}</small>`;
+          }
           marker.bindPopup(
-            `<div class="popup-ville">${nom} <br><small>${toAscii(nom)}</small></div>`,
+            `<div class="popup-ville">${popupContent}</div>`,
             { className: 'popup-ville-container' }
           );
-          marker.openPopup();
         }
       });
+
       updateCompteur();
       input.style.backgroundColor = "#b6fcb6";
       setTimeout(() => { input.style.backgroundColor = ""; }, 100);
@@ -184,18 +254,29 @@ document.getElementById('showQuizBtn').addEventListener('click', () => {
 
   initMap();
 
+  // --- Correction pour "Montrer les villes" ---
   villesToShow.forEach(ville => {
     let nom = (ville["name:fr"] || ville["name:en"] || ville.name || "");
     if (!nom || ville.location[1] === undefined || ville.location[0] === undefined) return;
     const marker = L.circleMarker([ville.location[1], ville.location[0]], {
-      radius: 3,
+      radius: 1,
       color: 'blue',
       fillColor: 'blue',
-      fillOpacity: 0.5
+      fillOpacity: 1
     }).addTo(map);
 
-    // Toujours afficher le nom au survol si pas de quiz en cours
-    marker.bindPopup(nom);
+    const asciiNom = toAscii(nom).toLowerCase();
+    const nomMaj = nom.charAt(0).toUpperCase() + nom.slice(1);
+    let popupContent;
+    if (asciiNom !== nom.toLowerCase()) {
+      popupContent = `${nomMaj} <br><small>${asciiNom}</small>`;
+    } else {
+      popupContent = nomMaj;
+    }
+    marker.bindPopup(
+      `<div class="popup-ville">${popupContent}</div>`,
+      { className: 'popup-ville-container' }
+    );
     marker.on('mouseover', function() { marker.openPopup(); });
     marker.on('mouseout', function() { marker.closePopup(); });
   });
@@ -203,7 +284,9 @@ document.getElementById('showQuizBtn').addEventListener('click', () => {
   document.getElementById('villeInput').style.display = 'none';
   document.getElementById('restartQuizBtn').style.display = 'none';
   document.getElementById('backToHomeBtn').style.display = 'none';
-  document.getElementById('compteur').textContent = '';
+
+  // Affiche le nombre de villes
+  document.getElementById('compteur').textContent = `${villesToShow.length} villes affichées`;
 });
 
 // Bouton "Mettre fin au quiz"
@@ -214,13 +297,63 @@ document.getElementById('endQuizBtn').addEventListener('click', () => {
   document.getElementById('backToHomeBtn').style.display = '';
   document.getElementById('endQuizBtn').style.display = 'none';
 
+  // --- Correction pour "Mettre fin au quiz" ---
   Object.values(nomAsciiToVilles).flat().forEach(marker => {
     if (marker.options && marker.options._villeNom) {
-      marker.bindPopup(marker.options._villeNom);
+      const villeNom = marker.options._villeNom;
+      const villeNomMaj = villeNom.charAt(0).toUpperCase() + villeNom.slice(1);
+      const asciiNom = toAscii(villeNom);
+      let popupContent;
+      if (asciiNom !== villeNom.toLowerCase()) {
+        popupContent = `${villeNomMaj} <br><small>${asciiNom}</small>`;
+      } else {
+        popupContent = villeNomMaj;
+      }
+      marker.bindPopup(
+        `<div class="popup-ville">${popupContent}</div>`,
+        { className: 'popup-ville-container' }
+      );
       marker.on('mouseover', function() { marker.openPopup(); });
       marker.on('mouseout', function() { marker.closePopup(); });
     }
   });
 
   document.getElementById('compteur').textContent = '';
+});
+
+// Dictionnaire code pays -> nom pays
+let countryCodeToName = {ad: "Andorre",  ae: "Émirats arabes unis",  af: "Afghanistan",  ag: "Antigua-et-Barbuda",  ai: "Anguilla",  al: "Albanie",  am: "Arménie",  ao: "Angola",  ar: "Argentine",at: "Autriche",  au: "Australie",  az: "Azerbaïdjan",  ba: "Bosnie-Herzégovine",  bb: "Barbade",  bd: "Bangladesh",  be: "Belgique",  bf: "Burkina Faso",  bg: "Bulgarie",  bh: "Bahreïn",  bi: "Burundi",  bj: "Bénin",  bm: "Bermudes",  bn: "Brunei",  bo: "Bolivie",  br: "Brésil",  bs: "Bahamas",  bt: "Bhoutan",  bw: "Botswana",  by: "Biélorussie",  bz: "Belize",  ca: "Canada",  cd: "République démocratique du Congo",  cf: "République centrafricaine",  cg: "République du Congo",  ch: "Suisse",  ci: "Côte d'Ivoire",  ck: "Îles Cook",  cl: "Chili",  cm: "Cameroun",  cn: "Chine",  co: "Colombie",  cr: "Costa Rica",  cu: "Cuba",  cv: "Cap-Vert",  cy: "Chypre",  cz: "Tchéquie",  de: "Allemagne",  dj: "Djibouti",  dk: "Danemark",  dm: "Dominique",  do: "République dominicaine",  dz: "Algérie",  ec: "Équateur",  ee: "Estonie",  eg: "Égypte",  eh: "Sahara occidental",  er: "Érythrée",  es: "Espagne",  et: "Éthiopie",  fi: "Finlande",  fj: "Fidji",  fm: "Micronésie",  fo: "Îles Féroé",  fr: "France",  ga: "Gabon",  gb: "Royaume-Uni",  gd: "Grenade",  ge: "Géorgie",  gg: "Guernesey",  gh: "Ghana",  gi: "Gibraltar",  gl: "Groenland",  gm: "Gambie",  gn: "Guinée",  gq: "Guinée équatoriale",  gr: "Grèce",  gt: "Guatemala",  gw: "Guinée-Bissau",  gy: "Guyana", hn: "Honduras",  hr: "Croatie",  ht: "Haïti",  hu: "Hongrie",  id: "Indonésie",  ie: "Irlande",  il: "Israël",  im: "Île de Man",  in: "Inde",  iq: "Irak",  ir: "Iran",  is: "Islande",  it: "Italie",  je: "Jersey",  jm: "Jamaïque",  jo: "Jordanie",  jp: "Japon",  ke: "Kenya",  kg: "Kirghizistan",  kh: "Cambodge",  ki: "Kiribati",  km: "Comores",  kn: "Saint-Christophe-et-Niévès",  kp: "Corée du Nord",  kr: "Corée du Sud",  kw: "Koweït",  ky: "Îles Caïmans",  kz: "Kazakhstan",  la: "Laos",  lb: "Liban",  lc: "Sainte-Lucie",  li: "Liechtenstein",  lk: "Sri Lanka",  lr: "Libéria",  ls: "Lesotho",  lt: "Lituanie",  lu: "Luxembourg",  lv: "Lettonie",  ly: "Libye",  ma: "Maroc",  mc: "Monaco",  md: "Moldavie",  me: "Monténégro",  mg: "Madagascar",  mh: "Îles Marshall",  mk: "Macédoine du Nord",  ml: "Mali",  mm: "Myanmar",  mn: "Mongolie",  ms: "Montserrat",  mt: "Malte",  mu: "Maurice",  mv: "Maldives",  mw: "Malawi",  mx: "Mexique",  my: "Malaisie",  mz: "Mozambique",  na: "Namibie",  ng: "Nigéria",  ni: "Nicaragua",  nl: "Pays-Bas",  no: "Norvège",  np: "Népal",  nr: "Nauru",  nu: "Niue",  nz: "Nouvelle-Zélande",  om: "Oman",  pa: "Panama",  pe: "Pérou",  pg: "Papouasie-Nouvelle-Guinée",  ph: "Philippines",  pk: "Pakistan",  pl: "Pologne",  ps: "Palestine",  pt: "Portugal",  pw: "Palaos",  py: "Paraguay",  qa: "Qatar",  ro: "Roumanie",  rs: "Serbie",  ru: "Russie",  rw: "Rwanda",  sa: "Arabie saoudite",  sb: "Îles Salomon",  sc: "Seychelles",  sd: "Soudan",  se: "Suède",  sg: "Singapour",  sh: "Sainte-Hélène",  si: "Slovénie",  sk: "Slovaquie",  sm: "Saint-Marin",  sn: "Sénégal",  so: "Somalie",  sr: "Suriname",  ss: "Soudan du Sud",  st: "Sao Tomé-et-Principe",  sv: "Salvador",  sy: "Syrie",  sz: "Eswatini",  td: "Tchad",  tg: "Togo",  th: "Thaïlande",  tj: "Tadjikistan",  tk: "Tokelau",  tl: "Timor oriental",  tm: "Turkménistan",  tn: "Tunisie",  to: "Tonga",  tr: "Turquie",  tt: "Trinité-et-Tobago",  tv: "Tuvalu",  tz: "Tanzanie",  ua: "Ukraine",  ug: "Ouganda",  us: "États-Unis",  uy: "Uruguay",  uz: "Ouzbékistan",  vc: "Saint-Vincent-et-les-Grenadines",  ve: "Venezuela",  vg: "Îles Vierges britanniques",  vn: "Viêt Nam",  vu: "Vanuatu",  ws: "Samoa",  ye: "Yémen",  za: "Afrique du Sud",  zm: "Zambie",  zw: "Zimbabwe",  xk: "Kosovo"};
+
+// Génère la liste des pays uniques à partir de la base de données
+function getPaysList() {
+  const codes = new Set();
+  window.villesData.forEach(ville => {
+    if (ville.address && ville.address.country_code) {
+      codes.add(ville.address.country_code);
+    }
+  });
+  // Trie par nom de pays selon le dictionnaire fourni
+  return Array.from(codes).sort((a, b) => {
+    const na = countryCodeToName[a] || a.toUpperCase();
+    const nb = countryCodeToName[b] || b.toUpperCase();
+    return na.localeCompare(nb);
+  });
+}
+
+// Affiche/masque le menu déroulant des pays selon le mode choisi
+document.getElementById('modePays').addEventListener('change', function() {
+  const select = document.getElementById('selectPays');
+  if (this.value === 'one') {
+    select.innerHTML = '';
+    getPaysList().forEach(code => {
+      const opt = document.createElement('option');
+      opt.value = code;
+      // Affiche seulement le nom du pays, sans le code ISO
+      opt.textContent = countryCodeToName[code] || code.toUpperCase();
+      select.appendChild(opt);
+    });
+    select.style.display = '';
+  } else {
+    select.style.display = 'none';
+  }
 });
