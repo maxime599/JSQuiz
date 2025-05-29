@@ -105,7 +105,7 @@ function getVillesSelectionnees() {
         "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
         "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
         "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va", "fo", "gg", "im",
-        "je", "gi", "vg"
+        "je", "gi", "vg", "tr" // Turquie incluse pour le filtrage spécial
       ],
       oceanie: [
         "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
@@ -118,7 +118,54 @@ function getVillesSelectionnees() {
       codes = Array.from(new Set(window.villesData.map(v => v.address?.country_code)))
         .filter(code => !allKnown.includes(code));
     }
-    data = data.filter(v => v.address && codes.includes(v.address.country_code));
+    // Filtrage spécial pour la Turquie en Europe
+    if (continent === 'europe') {
+      data = data.filter(v => {
+        if (!v.address || !v.address.country_code) return false;
+        if (v.address.country_code === 'tr') {
+          // Turquie : ne garder que les villes européennes
+          return (
+            v.address.province === "Kırklareli" ||
+            v.address.province === "Edirne" ||
+            v.address.district === "Tekirdağ" ||
+            v.address.province === "İstanbul"
+          );
+        } else if (v.address.country_code === 'ru') {
+          // Russie : exclure les régions asiatiques
+          return !(
+            v.address.region === "Уральский федеральный округ" ||
+            v.address.region === "Сибирский федеральный округ" ||
+            v.address.region === "Дальневосточный федеральный округ"
+          );
+        } else {
+          return codes.includes(v.address.country_code);
+        }
+      });
+    } else if (continent === 'asie') {
+      data = data.filter(v => {
+        if (!v.address || !v.address.country_code) return false;
+        if (v.address.country_code === 'tr') {
+          // Turquie : exclure les villes européennes
+          return !(
+            v.address.province === "Kırklareli" ||
+            v.address.province === "Edirne" ||
+            v.address.district === "Tekirdağ" ||
+            v.address.province === "İstanbul"
+          );
+        } else if (v.address.country_code === 'ru') {
+          // Russie : inclure seulement les régions asiatiques
+          return (
+            v.address.region === "Уральский федеральный округ" ||
+            v.address.region === "Сибирский федеральный округ" ||
+            v.address.region === "Дальневосточный федеральный округ"
+          );
+        } else {
+          return codes.includes(v.address.country_code);
+        }
+      });
+    } else {
+      data = data.filter(v => v.address && codes.includes(v.address.country_code));
+    }
     console.log('Continent sélectionné :', continent);
     console.log('Codes ISO trouvés :', codes);
   }
