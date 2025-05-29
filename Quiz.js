@@ -71,11 +71,58 @@ let lastValidatedMarkers = []; // Ajout de cette ligne
 
 function getVillesSelectionnees() {
   let data = window.villesData;
-  // Filtre par pays si besoin
-  if (document.getElementById('modePays').value === 'one') {
+  const modePays = document.getElementById('modePays').value;
+
+  if (modePays === 'one') {
     const code = document.getElementById('selectPays').value;
     data = data.filter(v => v.address && v.address.country_code === code);
+  } else if (modePays === 'continent') {
+    const continent = document.getElementById('selectContinent').value;
+    const countriesByContinent = {
+      afrique: [
+        "dz", "ao", "bj", "bw", "bf", "bi", "cm", "cv", "cf", "td", "km", "cg",
+        "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
+        "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
+        "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
+        "tg", "tn", "ug", "zm", "zw", "eh", "sh", "sz"
+      ],
+      amerique_du_nord: [
+        "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
+        "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us", "ai", "bm", "gl", "ky", "ms"
+      ],
+      amerique_du_sud: [
+        "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve", "fk"
+      ],
+      antartique: ["gs"],
+      asie: [
+        "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
+        "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
+        "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
+        "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye", "ps", "ru"
+      ],
+      europe: [
+        "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
+        "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
+        "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
+        "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va", "fo", "gg", "im",
+        "je", "gi", "vg"
+      ],
+      oceanie: [
+        "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
+        "tv", "vu", "ck", "nu", "tk"
+      ]
+    };
+    let codes = countriesByContinent[continent] || [];
+    if (continent === 'autres') {
+      const allKnown = Object.values(countriesByContinent).flat();
+      codes = Array.from(new Set(window.villesData.map(v => v.address?.country_code)))
+        .filter(code => !allKnown.includes(code));
+    }
+    data = data.filter(v => v.address && codes.includes(v.address.country_code));
+    console.log('Continent sélectionné :', continent);
+    console.log('Codes ISO trouvés :', codes);
   }
+
   if (document.getElementById('modePopulation').checked) {
     const minPop = parseInt(document.getElementById('minPopulation').value, 10);
     return data.filter(v => v.population >= minPop);
@@ -356,28 +403,92 @@ function getPaysList() {
       codes.add(ville.address.country_code);
     }
   });
+
+  // Récupère le continent sélectionné
+  const continent = document.getElementById('selectContinent')?.value || 'all';
+  console.log('Continent sélectionné :', continent);
+
+  // Liste des codes ISO par continent
+  const countriesByContinent = {
+    afrique: [
+      "dz", "ao", "bj", "bw", "bf", "bi", "cm", "cv", "cf", "td", "km", "cg",
+      "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
+      "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
+      "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
+      "tg", "tn", "ug", "zm", "zw"
+    ],
+    amerique_du_nord: [
+      "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
+      "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us"
+    ],
+    amerique_du_sud: [
+      "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve"
+    ],
+    asie: [
+      "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
+      "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
+      "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
+      "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye"
+    ],
+    europe: [
+      "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
+      "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
+      "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
+      "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va"
+    ],
+    oceanie: [
+      "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
+      "tv", "vu"
+    ]
+  };
+
+  let filteredCodes = Array.from(codes);
+
+  if (continent && continent !== 'all') {
+    let continentCodes = countriesByContinent[continent] || [];
+    if (continent === 'autres') {
+      const allKnown = Object.values(countriesByContinent).flat();
+      continentCodes = filteredCodes.filter(code => !allKnown.includes(code));
+    } else {
+      continentCodes = continentCodes.filter(code => filteredCodes.includes(code));
+    }
+    filteredCodes = continentCodes;
+    console.log("Codes ISO trouvés pour le continent", continent, ":", filteredCodes);
+  }
+
   // Trie par nom de pays selon le dictionnaire fourni
-  return Array.from(codes).sort((a, b) => {
+  return filteredCodes.sort((a, b) => {
     const na = countryCodeToName[a] || a.toUpperCase();
     const nb = countryCodeToName[b] || b.toUpperCase();
     return na.localeCompare(nb);
   });
 }
 
-// Affiche/masque le menu déroulant des pays selon le mode choisi
+// Affiche/masque le menu déroulant des pays et des continents selon le mode choisi
 document.getElementById('modePays').addEventListener('change', function() {
-  const select = document.getElementById('selectPays');
+  const selectPays = document.getElementById('selectPays');
+  const selectContinent = document.getElementById('selectContinent');
   if (this.value === 'one') {
-    select.innerHTML = '';
-    getPaysList().forEach(code => {
+    // Affiche la liste des pays (tous), masque la liste des continents
+    selectPays.innerHTML = '';
+    // Affiche TOUS les pays, pas de filtre continent ici !
+    Object.keys(countryCodeToName).sort().forEach(code => {
       const opt = document.createElement('option');
       opt.value = code;
-      // Affiche seulement le nom du pays, sans le code ISO
       opt.textContent = countryCodeToName[code] || code.toUpperCase();
-      select.appendChild(opt);
+      selectPays.appendChild(opt);
     });
-    select.style.display = '';
+    selectPays.style.display = '';
+    selectContinent.style.display = 'none';
+  } else if (this.value === 'continent') {
+    // Affiche la liste des continents, masque la liste des pays
+    selectPays.style.display = 'none';
+    selectContinent.style.display = '';
   } else {
-    select.style.display = 'none';
+    // Masque les deux listes si "tous les pays" est sélectionné
+    selectPays.style.display = 'none';
+    selectContinent.style.display = 'none';
   }
 });
+
+document.getElementById('selectContinent').style.display = 'none';
