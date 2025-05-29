@@ -110,7 +110,7 @@ document.getElementById('startQuizBtn').addEventListener('click', () => {
   document.getElementById('endQuizBtn').style.display = '';
 
   // Cache aussi les sélecteurs de pays
-  document.getElementById('modePays').style.display = 'none';
+  document.getElementById('modePays').value = 'all';
   document.getElementById('selectPays').style.display = 'none';
 
   demarrerQuiz();
@@ -235,6 +235,7 @@ document.getElementById('backToHomeBtn').addEventListener('click', () => {
   document.getElementById('restartQuizBtn').style.display = 'none';
   document.getElementById('backToHomeBtn').style.display = 'none';
   document.getElementById('compteur').textContent = '';
+
   // Réaffiche les éléments de démarrage
   document.getElementById('minPopulation').style.display = '';
   document.getElementById('nbVilles').style.display = 'none';
@@ -244,6 +245,29 @@ document.getElementById('backToHomeBtn').addEventListener('click', () => {
   document.getElementById('labelNbVilles').style.display = '';
   document.getElementById('modePopulation').style.display = '';
   document.getElementById('modeNbVilles').style.display = '';
+  document.getElementById('modePays').style.display = '';
+  document.getElementById('selectPays').style.display = '';
+
+  // Sélectionne "population minimale" par défaut
+  document.getElementById('modePopulation').checked = true;
+  document.getElementById('modeNbVilles').checked = false;
+  document.getElementById('minPopulation').style.display = '';
+  document.getElementById('nbVilles').style.display = 'none';
+
+  // Sélectionne "Tous les pays" par défaut et masque la liste
+  document.getElementById('modePays').value = 'all';
+  document.getElementById('selectPays').style.display = 'none';
+
+  // Regénérer la liste des pays
+  const select = document.getElementById('selectPays');
+  select.innerHTML = '';
+  getPaysList().forEach(code => {
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = countryCodeToName[code] || code.toUpperCase();
+    select.appendChild(opt);
+  });
+
   initMap();
 });
 
