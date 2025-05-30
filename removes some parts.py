@@ -1,7 +1,7 @@
 import json
 
 # Fichiers d'entrée et de sortie
-input_file = 'cities+pop.json'
+input_file = 'cities_sans_doublons.json'
 output_file = 'cities.js'
 
 def clean_city(city):

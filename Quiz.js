@@ -33,22 +33,75 @@ function toAscii(str) {
   // Translitération russe
   function translittererRusse(texte) {
     const map = {
-      "А": "A", "а": "a", "Б": "B", "б": "b",
-      "В": "V", "в": "v", "Г": "G", "г": "g",
-      "Д": "D", "д": "d", "Е": "E", "е": "e",
-      "Ё": "E", "ё": "e", "Ж": "Zh", "ж": "zh",
-      "З": "Z", "з": "z", "И": "I", "и": "i",
-      "Й": "Y", "й": "y", "К": "K", "к": "k",
-      "Л": "L", "л": "l", "М": "M", "м": "m",
-      "Н": "N", "н": "n", "О": "O", "о": "o",
-      "П": "P", "п": "p", "Р": "R", "р": "r",
-      "С": "S", "с": "s", "Т": "T", "т": "t",
-      "У": "U", "у": "u", "Ф": "F", "ф": "f",
-      "Х": "Kh", "х": "kh", "Ц": "Ts", "ц": "ts",
-      "Ч": "Ch", "ч": "ch", "Ш": "Sh", "ш": "sh",
-      "Щ": "Shch", "щ": "shch", "Ы": "Y", "ы": "y",
-      "Э": "E", "э": "e", "Ю": "Yu", "ю": "yu",
-      "Я": "Ya", "я": "ya", "Ь": "", "ь": "", "Ъ": "", "ъ": ""
+      // Russe (cyrillique)
+      "А":"A","а":"a","Б":"B","б":"b","В":"V","в":"v",
+      "Г":"G","г":"g","Д":"D","д":"d","Е":"E","е":"e",
+      "Ё":"E","ё":"e","Ж":"Zh","ж":"zh","З":"Z","з":"z",
+      "И":"I","и":"i","Й":"Y","й":"y","К":"K","к":"k",
+      "Л":"L","л":"l","М":"M","м":"m","Н":"N","н":"n",
+      "О":"O","о":"o","П":"P","п":"p","Р":"R","р":"r",
+      "С":"S","с":"s","Т":"T","т":"t","У":"U","у":"u",
+      "Ф":"F","ф":"f","Х":"Kh","х":"kh","Ц":"Ts","ц":"ts",
+      "Ч":"Ch","ч":"ch","Ш":"Sh","ш":"sh","Щ":"Shch","щ":"shch",
+      "Ы":"Y","ы":"y","Э":"E","э":"e","Ю":"Yu","ю":"yu",
+      "Я":"Ya","я":"ya","Ь":"","ь":"","Ъ":"","ъ":"",
+
+      // Polonais
+      "ą":"a","ć":"c","ę":"e","ł":"l","ń":"n","ó":"o",
+      "ś":"s","ź":"z","ż":"z","Ą":"A","Ć":"C","Ę":"E",
+      "Ł":"L","Ń":"N","Ó":"O","Ś":"S","Ź":"Z","Ż":"Z",
+
+      // Tchèque / Slovaque
+      "á":"a","č":"c","ď":"d","é":"e","ě":"e","í":"i",
+      "ň":"n","ř":"r","š":"s","ť":"t","ú":"u","ů":"u",
+      "ý":"y","ž":"z","Á":"A","Č":"C","Ď":"D","É":"E",
+      "Ě":"E","Í":"I","Ň":"N","Ř":"R","Š":"S","Ť":"T",
+      "Ú":"U","Ů":"U","Ý":"Y","Ž":"Z",
+
+      // Hongrois
+      "ö":"o","ő":"o","ü":"u","ű":"u","Ö":"O","Ő":"O",
+      "Ü":"U","Ű":"U",
+
+      // Roumain
+      "ă":"a","â":"a","î":"i","ș":"s","ț":"t",
+      "Ă":"A","Â":"A","Î":"I","Ș":"S","Ț":"T",
+
+      // Croate / Slovène / Serbe latin
+      "č":"c","ć":"c","đ":"dj","š":"s","ž":"z",
+      "Č":"C","Ć":"C","Đ":"Dj","Š":"S","Ž":"Z",
+
+      // Turc
+      "ç":"c","ğ":"g","ı":"i","ş":"s","Ç":"C",
+      "Ğ":"G","İ":"I","Ş":"S",
+
+      // Allemand
+      "ä":"a","ö":"o","ü":"u","ß":"ss",
+      "Ä":"A","Ö":"O","Ü":"U",
+
+      // Grec moderne
+      "Α":"A","Β":"V","Γ":"G","Δ":"D","Ε":"E","Ζ":"Z",
+      "Η":"I","Θ":"Th","Ι":"I","Κ":"K","Λ":"L","Μ":"M",
+      "Ν":"N","Ξ":"X","Ο":"O","Π":"P","Ρ":"R","Σ":"S",
+      "Τ":"T","Υ":"Y","Φ":"F","Χ":"Ch","Ψ":"Ps","Ω":"O",
+
+      "α":"a","β":"v","γ":"g","δ":"d","ε":"e","ζ":"z",
+      "η":"i","θ":"th","ι":"i","κ":"k","λ":"l","μ":"m",
+      "ν":"n","ξ":"x","ο":"o","π":"p","ρ":"r","σ":"s",
+      "ς":"s","τ":"t","υ":"y","φ":"f","χ":"ch","ψ":"ps","ω":"o",
+
+      "Ά":"A","Έ":"E","Ή":"I","Ί":"I","Ό":"O","Ύ":"Y","Ώ":"O",
+      "ά":"a","έ":"e","ή":"i","ί":"i","ό":"o","ύ":"y","ώ":"o",
+      "ϊ":"i","ΐ":"i","ΰ":"y","ϋ":"y","Ϊ":"I","Ϋ":"Y",
+
+      // Espagnol
+      "ñ":"n","Ñ":"N","á":"a","é":"e","í":"i","ó":"o",
+
+      // Portugais
+      "ã":"a","Ã":"A","õ":"o","Õ":"O","ç":"c","Ç":"C",
+
+      // Italien
+      "à":"a","è":"e","é":"e","ì":"i","ò":"o","ù":"u",
+      "À":"A","È":"E","É":"E","Ì":"I","Ò":"O","Ù":"U",
     };
     return texte.split('').map(char => map[char] ?? char).join('');
   }
@@ -137,6 +190,21 @@ function getVillesSelectionnees() {
             v.address.region === "Сибирский федеральный округ" ||
             v.address.region === "Дальневосточный федеральный округ"
           );
+        } else if (v.address.country_code === 'fr') {
+          // France : exclure les régions hors Europe
+          return !(
+            v.address.state === "Guadeloupe" ||
+            v.address.state === "Martinique" ||
+            v.address.state === "Guyane" ||
+            v.address.state === "Saint-Martin (France)" ||
+            v.address.state === "Saint-Barthélemy" ||
+            v.address.state === "La Réunion" ||
+            v.address.state === "Polynésie Française" ||
+            v.address.state === "Wallis-et-Futuna" ||
+            v.address.archipelago === "Nouvelle-Calédonie" ||
+            v.address.state === "Saint-Pierre-et-Miquelon" ||
+            v.address.state === "Mayotte"
+          );
         } else {
           return codes.includes(v.address.country_code);
         }
@@ -158,6 +226,56 @@ function getVillesSelectionnees() {
             v.address.region === "Уральский федеральный округ" ||
             v.address.region === "Сибирский федеральный округ" ||
             v.address.region === "Дальневосточный федеральный округ"
+          );
+        } else if (v.address.country_code === 'fr') {
+          // France : aucune région française en Asie
+          return false;
+        } else {
+          return codes.includes(v.address.country_code);
+        }
+      });
+    } else if (continent === 'afrique') {
+      data = data.filter(v => {
+        if (!v.address || !v.address.country_code) return false;
+        if (v.address.country_code === 'fr') {
+          // France : inclure seulement La Réunion
+          return (
+            v.address.state === "La Réunion" ||
+            v.address.state === "Mayotte"
+          );
+        } else {
+          return codes.includes(v.address.country_code);
+        }
+      });
+    } else if (continent === 'amerique_du_sud') {
+      data = data.filter(v => {
+        if (!v.address || !v.address.country_code) return false;
+        if (v.address.country_code === 'fr') {
+          // France : inclure seulement Guyane
+          return v.address.state === "Guyane";
+        } else {
+          return codes.includes(v.address.country_code);
+        }
+      });
+    } else if (continent === 'amerique_du_nord') {
+      data = data.filter(v => {
+        if (!v.address || !v.address.country_code) return false;
+        if (v.address.country_code === 'fr') {
+          // France : inclure seulement Saint-Pierre-et-Miquelon
+          return v.address.state === "Saint-Pierre-et-Miquelon";
+        } else {
+          return codes.includes(v.address.country_code);
+        }
+      });
+    } else if (continent === 'oceanie') {
+      data = data.filter(v => {
+        if (!v.address || !v.address.country_code) return false;
+        if (v.address.country_code === 'fr') {
+          // France : inclure Polynésie Française, Wallis-et-Futuna, Nouvelle-Calédonie
+          return (
+            v.address.state === "Polynésie Française" ||
+            v.address.state === "Wallis-et-Futuna" ||
+            v.address.archipelago === "Nouvelle-Calédonie"
           );
         } else {
           return codes.includes(v.address.country_code);
@@ -203,9 +321,10 @@ document.getElementById('startQuizBtn').addEventListener('click', () => {
   document.getElementById('modeNbVilles').style.display = 'none';
   document.getElementById('endQuizBtn').style.display = '';
 
-  // Cache aussi les sélecteurs de pays
-  document.getElementById('modePays').value = 'all';
+  // Cache aussi les sélecteurs de pays et de continents
+  document.getElementById('modePays').style.display = 'none';
   document.getElementById('selectPays').style.display = 'none';
+  document.getElementById('selectContinent').style.display = 'none';
 
   demarrerQuiz();
 });
@@ -225,10 +344,10 @@ function demarrerQuiz() {
     if (!nomLower || ville.location[1] === undefined || ville.location[0] === undefined) return;
 
     const marker = L.circleMarker([ville.location[1], ville.location[0]], {
-      radius: 1,
+      radius: 2,
       color: 'red',
       fillColor: 'red',
-      fillOpacity: 0.8,
+      fillOpacity: 1,
       _villeNom: nomLower
     }).addTo(map);
 
@@ -377,7 +496,7 @@ document.getElementById('showQuizBtn').addEventListener('click', () => {
     let nom = (ville["name:fr"] || ville["name:en"] || ville.name || "");
     if (!nom || ville.location[1] === undefined || ville.location[0] === undefined) return;
     const marker = L.circleMarker([ville.location[1], ville.location[0]], {
-      radius: 1,
+      radius: 2,
       color: 'blue',
       fillColor: 'blue',
       fillOpacity: 1
@@ -539,3 +658,58 @@ document.getElementById('modePays').addEventListener('change', function() {
 });
 
 document.getElementById('selectContinent').style.display = 'none';
+
+// Ajoute ce JS à la fin de ton fichier principal JS (ex: Quiz.js)
+
+// Affichage/fermeture du panneau paramètres
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsPanel = document.getElementById('settingsPanel');
+settingsBtn.addEventListener('click', () => {
+  settingsPanel.style.display = settingsPanel.style.display === 'none' ? '' : 'none';
+});
+
+// Curseur pour la taille des marqueurs
+let markerRadius = 3;
+const markerSizeRange = document.getElementById('markerSizeRange');
+const markerSizeValue = document.getElementById('markerSizeValue');
+
+
+
+// Pour mettre à jour la taille des marqueurs déjà affichés (optionnel) :
+function updateAllMarkerSizes() {
+  // Marqueurs du quiz
+  if (window.nomAsciiToVilles) {
+    Object.values(nomAsciiToVilles).flat().forEach(marker => {
+      marker.setStyle({ radius: markerRadius });
+    });
+  }
+  // Marqueurs du mode "Montrer les villes"
+  if (window.map) {
+    map.eachLayer(layer => {
+      if (layer instanceof L.CircleMarker) {
+        layer.setStyle({ radius: markerRadius });
+      }
+    });
+  }
+}
+
+// L'écouteur doit venir APRÈS la définition de la fonction ci-dessus
+markerSizeRange.addEventListener('input', function() {
+  markerRadius = parseFloat(this.value);
+  markerSizeValue.textContent = this.value;
+  updateAllMarkerSizes();
+  updateMarkerStrokeWidth();
+});
+
+
+// Ajoute ceci après l'initialisation du curseur markerSizeRange
+
+const markerStrokeStyle = document.createElement('style');
+document.head.appendChild(markerStrokeStyle);
+
+function updateMarkerStrokeWidth() {
+  // Par exemple, adapte la formule pour que le stroke soit proportionnel à la taille du marker
+  const strokeWidth = Math.max(0.2, markerRadius);
+  markerStrokeStyle.textContent = `.leaflet-interactive { stroke-width: ${strokeWidth}px !important; }`;
+}
+updateMarkerStrokeWidth(); // Appel initial pour appliquer la valeur par défaut
