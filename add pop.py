@@ -55,9 +55,6 @@ has_population = 0
 
 for city in cities:
     pop_candidates = []
-    # Population déjà présente dans cities.json
-    if "population" in city and isinstance(city["population"], int):
-        pop_candidates.append(city["population"])
 
     other_names = city.get("other_names", {})
     name_en = other_names.get("name:en", city.get("name", "")).strip().lower()
@@ -86,8 +83,8 @@ for city in cities:
 
     if pop_candidates:
         max_pop = max(pop_candidates)
-        if "population" not in city or city["population"] != max_pop:
-            city["population"] = max_pop
+        # On ne prend PAS en compte la population déjà présente dans city
+        city["population"] = max_pop
         if found_csv:
             added_csv += 1
         if found_json:
@@ -95,7 +92,6 @@ for city in cities:
         has_population += 1
     else:
         missing_population += 1
-
 # Sauvegarder le résultat
 with open("cities+pop.json", "w", encoding="utf-8") as f:
     json.dump(cities, f, ensure_ascii=False, indent=2)
