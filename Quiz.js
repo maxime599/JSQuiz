@@ -247,6 +247,15 @@ function getVillesSelectionnees() {
     return pointsPays;
   }
 
+  if (modeVillesOuCapitals === 'pays_capitals') {
+    // Affiche toutes les capitales (y compris secondaires)
+    return window.capitalsData.map(c => ({
+      name: c.capitale,
+      country: c.pays,
+      location: c.location,
+      pays: c.pays
+    }));
+  }
   // Mode normal (villes)
   let data = window.villesData;
   const modePays = document.getElementById('modePays').value;
@@ -461,10 +470,10 @@ function demarrerQuiz() {
   initMap();
   marqueurs = {};
   villesTrouvees = new Set();
-  nomAsciiToVilles = {}; // Réinitialisation à chaque nouveau quiz
+  nomAsciiToVilles = {};
 
-  // Ajoute les marqueurs pour chaque ville
-  villes.forEach(ville => {
+  // Ajoute les marqueurs pour chaque ville/capitale
+  villes.forEach((ville, idx) => {
     let nom = (ville["name:fr"] || ville["name:en"] || ville.name || "");
     const nomLower = nom.toLowerCase();
     const asciiNom = toAscii(nomLower);
@@ -476,35 +485,37 @@ function demarrerQuiz() {
       color: 'red',
       fillColor: 'red',
       fillOpacity: 1,
-      _villeNom: nomLower
+      _villeNom: nomLower,
+      _paysNom: ville.pays || ville.country || "",
+      _idx: idx
     }).addTo(map);
 
     if (!nomAsciiToVilles[asciiNom]) nomAsciiToVilles[asciiNom] = [];
     nomAsciiToVilles[asciiNom].push(marker);
 
-    // Prépare le contenu de la popup (affichage avec majuscule)
-    let popupContent = nomLower.charAt(0).toUpperCase() + nomLower.slice(1);
-    if (ville.pays) {
-      popupContent += `<br><small>${ville.pays}</small>`;
-    }
-    marker.bindPopup(
-      `<div class="popup-ville">${popupContent}</div>`,
-      { className: 'popup-ville-container' }
-    );
-
-    // Popup au survol
+    // Popup dynamique au survol
     marker.on('mouseover', function() {
-      if (villesTrouvees.has(marker)) {
-        let popupContent = nomLower.charAt(0).toUpperCase() + nomLower.slice(1);
-        if (ville.pays) {
-          popupContent += `<br><small>${ville.pays}</small>`;
-        }
-        marker.bindPopup(
-          `<div class="popup-ville">${popupContent}</div>`,
-          { className: 'popup-ville-container' }
-        );
-        marker.openPopup();
+      const v = villes[marker.options._idx];
+      let popupContent = "";
+
+      // Affichage conditionnel selon ce qui a été trouvé
+      if (v.valid && v.valid.capitale && v.valid.pays) {
+        popupContent = `<b>${v.name}</b><br><small>${v.pays || v.country}</small>`;
+      } else if (v.valid && v.valid.capitale) {
+        popupContent = `<b>${v.name}</b>`;
+      } else if (v.valid && v.valid.pays) {
+        popupContent = `<small>${v.pays || v.country}</small>`;
+      } else {
+        // Rien trouvé : pas de popup
+        marker.closePopup();
+        return;
       }
+
+      marker.bindPopup(
+        `<div class="popup-ville">${popupContent}</div>`,
+        { className: 'popup-ville-container' }
+      );
+      marker.openPopup();
     });
     marker.on('mouseout', function() { marker.closePopup(); });
   });
@@ -519,8 +530,52 @@ function demarrerQuiz() {
 
   input.oninput = function () {
     const saisie = toAscii(input.value.trim().toLowerCase());
+    const modeVillesOuCapitals = document.getElementById('modeVillesOuCapitals')?.value || 'villes';
+
+    if (modeVillesOuCapitals === 'pays_capitals') {
+      let found = false;
+      villes.forEach((ville, idx) => {
+        // Initialisation de l'état de validation
+        if (!ville.valid) ville.valid = { capitale: false, pays: false };
+
+        // Vérifie la capitale
+        if (!ville.valid.capitale && saisie === toAscii((ville.name || '').toLowerCase())) {
+          ville.valid.capitale = true;
+          found = true;
+        }
+        // Vérifie le pays
+        if (!ville.valid.pays && saisie === toAscii((ville.country || ville.pays || '').toLowerCase())) {
+          ville.valid.pays = true;
+          found = true;
+        }
+
+        // Mets à jour la couleur du marqueur
+        const asciiNom = toAscii((ville.name || '').toLowerCase());
+        const markers = nomAsciiToVilles[asciiNom];
+        if (markers) {
+          markers.forEach(marker => {
+            if (ville.valid.capitale && ville.valid.pays) {
+              marker.setStyle({ color: 'green', fillColor: 'green', radius: 2 });
+            } else if (ville.valid.capitale || ville.valid.pays) {
+              marker.setStyle({ color: 'orange', fillColor: 'orange', radius: 2 });
+            } else {
+              marker.setStyle({ color: 'red', fillColor: 'red', radius: 2 });
+            }
+          });
+        }
+      });
+
+      updateCompteur();
+      if (found) {
+        input.style.backgroundColor = "#b6fcb6";
+        setTimeout(() => { input.style.backgroundColor = ""; }, 100);
+        input.value = '';
+      }
+      return;
+    }
+
+    // --- Modes classiques (capitales, pays, villes) ---
     const markers = nomAsciiToVilles[saisie];
-  
 
     if (markers && markers.some(m => !villesTrouvees.has(m))) {
       // Remet les anciens en vert
@@ -558,7 +613,21 @@ function demarrerQuiz() {
 function updateCompteur() {
   const compteur = document.getElementById('compteur');
   const modeVillesOuCapitals = document.getElementById('modeVillesOuCapitals')?.value || 'villes';
-  if (modeVillesOuCapitals === 'capitals') {
+  if (modeVillesOuCapitals === 'pays_capitals') {
+    // Calcule le nombre total de pays et de capitales uniques
+    const paysUniques = new Set(window.capitalsData.map(c => c.pays));
+    const capitalsUniques = new Set(window.capitalsData.map(c => c.capitale));
+    let nbPaysTrouves = 0;
+    let nbCapTrouvees = 0;
+    villes.forEach(v => {
+      if (v.valid && v.valid.pays) nbPaysTrouves++;
+      if (v.valid && v.valid.capitale) nbCapTrouvees++;
+    });
+    compteur.textContent =
+      `${nbPaysTrouves} / ${paysUniques.size} pays trouvés, ` +
+      `${nbCapTrouvees} / ${capitalsUniques.size} capitales trouvées`;
+  }
+  else if (modeVillesOuCapitals === 'capitals') {
     compteur.textContent = `${villesTrouvees.size} / ${villes.length} capitales trouvées`;
   } else if (modeVillesOuCapitals === 'pays') {
     compteur.textContent = `${villesTrouvees.size} / ${villes.length} pays trouvés`;
@@ -624,12 +693,29 @@ document.getElementById('backToHomeBtn').addEventListener('click', () => {
 
 // Bouton "Montrer les villes"
 document.getElementById('showQuizBtn').addEventListener('click', () => {
-  quizEnCours = false; // On n'est pas dans le quiz
-  const villesToShow = getVillesSelectionnees();
+  quizEnCours = false;
+  // --- Ajout : clear la carte avant d'afficher les nouveaux points ---
+  if (window.map) {
+    map.eachLayer(layer => {
+      // Ne retire pas la couche de fond (tileLayer)
+      if (layer instanceof L.CircleMarker) {
+        map.removeLayer(layer);
+      }
+    });
+  }
 
-  initMap();
+  const mode = document.getElementById('modeVillesOuCapitals').value;
+  let villesToShow;
+  if (mode === 'pays_capitals') {
+    villesToShow = window.capitalsData.map(c => ({
+      name: c.capitale,
+      location: c.location,
+      pays: c.pays
+    }));
+  } else {
+    villesToShow = getVillesSelectionnees();
+  }
 
-  // --- Correction pour "Montrer les villes" ---
   villesToShow.forEach(ville => {
     let nom = (ville["name:fr"] || ville["name:en"] || ville.name || "");
     if (!nom || ville.location[1] === undefined || ville.location[0] === undefined) return;
@@ -642,12 +728,8 @@ document.getElementById('showQuizBtn').addEventListener('click', () => {
 
     const asciiNom = toAscii(nom).toLowerCase();
     const nomMaj = nom.charAt(0).toUpperCase() + nom.slice(1);
-    let popupContent;
-    if (asciiNom !== nom.toLowerCase()) {
-      popupContent = `${nomMaj} <br><small>${asciiNom}</small>`;
-    } else {
-      popupContent = nomMaj;
-    }
+    let popupContent = nomMaj;
+    if (ville.pays) popupContent += `<br><small>${ville.pays}</small>`;
     marker.bindPopup(
       `<div class="popup-ville">${popupContent}</div>`,
       { className: 'popup-ville-container' }
@@ -661,10 +743,11 @@ document.getElementById('showQuizBtn').addEventListener('click', () => {
   document.getElementById('backToHomeBtn').style.display = 'none';
 
   // Affiche le nombre d'entités affichées selon le mode
-  const modeVillesOuCapitals = document.getElementById('modeVillesOuCapitals')?.value || 'villes';
-  if (modeVillesOuCapitals === 'capitals') {
+  if (mode === 'pays_capitals') {
     document.getElementById('compteur').textContent = `${villesToShow.length} capitales affichées`;
-  } else if (modeVillesOuCapitals === 'pays') {
+  } else if (mode === 'capitals') {
+    document.getElementById('compteur').textContent = `${villesToShow.length} capitales affichées`;
+  } else if (mode === 'pays') {
     document.getElementById('compteur').textContent = `${villesToShow.length} pays affichés`;
   } else {
     document.getElementById('compteur').textContent = `${villesToShow.length} villes affichées`;
@@ -865,18 +948,19 @@ document.getElementById('modeVillesOuCapitals').addEventListener('change', funct
   const mode = this.value;
   const isCapitals = mode === 'capitals';
   const isPays = mode === 'pays';
+  const isPaysCapitals = mode === 'pays_capitals';
 
   // Désactive/active les filtres population/nbVilles selon le mode
-  document.getElementById('minPopulation').style.display = (isCapitals || isPays) ? 'none' : '';
-  document.getElementById('nbVilles').style.display = (isCapitals || isPays) ? 'none' : '';
-  document.getElementById('labelPopulation').style.display = (isCapitals || isPays) ? 'none' : '';
-  document.getElementById('labelNbVilles').style.display = (isCapitals || isPays) ? 'none' : '';
-  document.getElementById('modePopulation').style.display = (isCapitals || isPays) ? 'none' : '';
-  document.getElementById('modeNbVilles').style.display = (isCapitals || isPays) ? 'none' : '';
+  document.getElementById('minPopulation').style.display = (isCapitals || isPays || isPaysCapitals) ? 'none' : '';
+  document.getElementById('nbVilles').style.display = (isCapitals || isPays || isPaysCapitals) ? 'none' : '';
+  document.getElementById('labelPopulation').style.display = (isCapitals || isPays || isPaysCapitals) ? 'none' : '';
+  document.getElementById('labelNbVilles').style.display = (isCapitals || isPays || isPaysCapitals) ? 'none' : '';
+  document.getElementById('modePopulation').style.display = (isCapitals || isPays || isPaysCapitals) ? 'none' : '';
+  document.getElementById('modeNbVilles').style.display = (isCapitals || isPays || isPaysCapitals) ? 'none' : '';
 
-  // Enlève l'option "pays seul" si capitals ou pays, la remet sinon
+  // Enlève l'option "pays seul" si capitals, pays ou pays+capitals, la remet sinon
   const modePays = document.getElementById('modePays');
-  if (isCapitals || isPays) {
+  if (isCapitals || isPays || isPaysCapitals) {
     Array.from(modePays.options).forEach(opt => {
       if (opt.value === 'one') opt.style.display = 'none';
     });
