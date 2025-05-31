@@ -248,7 +248,53 @@ function getVillesSelectionnees() {
   }
 
   if (modeVillesOuCapitals === 'pays_capitals') {
-    // Affiche toutes les capitales (y compris secondaires)
+    // Filtrage par continent si demandé
+    const modePays = document.getElementById('modePays').value;
+    if (modePays === 'continent') {
+      const continent = document.getElementById('selectContinent').value;
+      const countriesByContinent = {
+        afrique: [
+          "dz", "ao", "bj", "bw", "bf", "bi", "cm", "cv", "cf", "td", "km", "cg",
+          "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
+          "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
+          "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
+          "tg", "tn", "ug", "zm", "zw"
+        ],
+        amerique_du_nord: [
+          "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
+          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us"
+        ],
+        amerique_du_sud: [
+          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve"
+        ],
+        asie: [
+          "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
+          "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
+          "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
+          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye"
+        ],
+        europe: [
+          "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
+          "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
+          "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
+          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va"
+        ],
+        oceanie: [
+          "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
+          "tv", "vu"
+        ]
+      };
+      let codes = countriesByContinent[continent] || [];
+      return window.capitalsData
+        .filter(c => codes.includes((c.country_code || '').toLowerCase()))
+        .map(c => ({
+          name: c.capitale,
+          country: c.pays,
+          location: c.location,
+          pays: c.pays
+        }));
+    }
+    // Sinon, toutes les capitales
     return window.capitalsData.map(c => ({
       name: c.capitale,
       country: c.pays,
@@ -614,9 +660,9 @@ function updateCompteur() {
   const compteur = document.getElementById('compteur');
   const modeVillesOuCapitals = document.getElementById('modeVillesOuCapitals')?.value || 'villes';
   if (modeVillesOuCapitals === 'pays_capitals') {
-    // Calcule le nombre total de pays et de capitales uniques
-    const paysUniques = new Set(window.capitalsData.map(c => c.pays));
-    const capitalsUniques = new Set(window.capitalsData.map(c => c.capitale));
+    // Calcule le nombre total de pays et de capitales UNIQUEMENT dans le quiz en cours
+    const paysUniques = new Set(villes.map(v => v.pays));
+    const capitalsUniques = new Set(villes.map(v => v.name));
     let nbPaysTrouves = 0;
     let nbCapTrouvees = 0;
     villes.forEach(v => {
@@ -707,11 +753,57 @@ document.getElementById('showQuizBtn').addEventListener('click', () => {
   const mode = document.getElementById('modeVillesOuCapitals').value;
   let villesToShow;
   if (mode === 'pays_capitals') {
-    villesToShow = window.capitalsData.map(c => ({
-      name: c.capitale,
-      location: c.location,
-      pays: c.pays
-    }));
+    // Utilise le même filtrage que getVillesSelectionnees pour le continent
+    const modePays = document.getElementById('modePays').value;
+    if (modePays === 'continent') {
+      const continent = document.getElementById('selectContinent').value;
+      const countriesByContinent = {
+        afrique: [
+          "dz", "ao", "bj", "bw", "bf", "bi", "cm", "cv", "cf", "td", "km", "cg",
+          "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
+          "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
+          "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
+          "tg", "tn", "ug", "zm", "zw"
+        ],
+        amerique_du_nord: [
+          "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
+          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us"
+        ],
+        amerique_du_sud: [
+          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve"
+        ],
+        asie: [
+          "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
+          "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
+          "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
+          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye"
+        ],
+        europe: [
+          "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
+          "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
+          "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
+          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va"
+        ],
+        oceanie: [
+          "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
+          "tv", "vu"
+        ]
+      };
+      let codes = countriesByContinent[continent] || [];
+      villesToShow = window.capitalsData
+        .filter(c => codes.includes((c.country_code || '').toLowerCase()))
+        .map(c => ({
+          name: c.capitale,
+          location: c.location,
+          pays: c.pays
+        }));
+    } else {
+      villesToShow = window.capitalsData.map(c => ({
+        name: c.capitale,
+        location: c.location,
+        pays: c.pays
+      }));
+    }
   } else {
     villesToShow = getVillesSelectionnees();
   }
@@ -744,7 +836,10 @@ document.getElementById('showQuizBtn').addEventListener('click', () => {
 
   // Affiche le nombre d'entités affichées selon le mode
   if (mode === 'pays_capitals') {
-    document.getElementById('compteur').textContent = `${villesToShow.length} capitales affichées`;
+    // Calcule le nombre de pays uniques
+    const paysUniques = new Set(villesToShow.map(v => v.pays));
+    document.getElementById('compteur').textContent =
+      `${villesToShow.length} capitales, ${paysUniques.size} pays`;
   } else if (mode === 'capitals') {
     document.getElementById('compteur').textContent = `${villesToShow.length} capitales affichées`;
   } else if (mode === 'pays') {
