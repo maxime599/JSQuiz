@@ -29,6 +29,11 @@ function initMap() {
 }
 initMap(); // Affiche la carte vide dès le début
 
+function capitalizeFirstLetter(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function toAscii(str) {
   // Translitération russe
   function translittererRusse(texte) {
@@ -526,44 +531,74 @@ function demarrerQuiz() {
 
     if (!nomLower || ville.location[1] === undefined || ville.location[0] === undefined) return;
 
-    const marker = L.circleMarker([ville.location[1], ville.location[0]], {
-      radius: 2,
-      color: 'red',
-      fillColor: 'red',
-      fillOpacity: 1,
-      _villeNom: nomLower,
-      _paysNom: ville.pays || ville.country || "",
-      _idx: idx
-    }).addTo(map);
+      const marker = L.circleMarker([ville.location[1], ville.location[0]], {
+        radius: 2,
+        color: 'red',
+        fillColor: 'red',
+        fillOpacity: 1,
+        _villeNom: nomLower,
+        _paysNom: ville.pays || ville.country || "",
+        _idx: idx
+      }).addTo(map);
 
-    if (!nomAsciiToVilles[asciiNom]) nomAsciiToVilles[asciiNom] = [];
-    nomAsciiToVilles[asciiNom].push(marker);
+      if (!nomAsciiToVilles[asciiNom]) nomAsciiToVilles[asciiNom] = [];
+      nomAsciiToVilles[asciiNom].push(marker);
+      
+      if (document.getElementById('modeVillesOuCapitals').value === 'pays_capitals') {
+        marker.bindPopup('', { className: 'popup-ville-container', autoClose: false, closeOnClick: false });
+      }
+      // Désactive l'ouverture au clic
+      marker.off('click');
 
-    // Popup dynamique au survol
-    marker.on('mouseover', function() {
-      const v = villes[marker.options._idx];
-      let popupContent = "";
-
-      // Affichage conditionnel selon ce qui a été trouvé
-      if (v.valid && v.valid.capitale && v.valid.pays) {
-        popupContent = `<b>${v.name}</b><br><small>${v.pays || v.country}</small>`;
-      } else if (v.valid && v.valid.capitale) {
-        popupContent = `<b>${v.name}</b>`;
-      } else if (v.valid && v.valid.pays) {
-        popupContent = `<small>${v.pays || v.country}</small>`;
-      } else {
-        // Rien trouvé : pas de popup
-        marker.closePopup();
-        return;
+      // Popup dynamique au survol : n'affiche la popup que si trouvé
+      function capitalizeWords(str) {
+        return (str || '').replace(/\b\w/g, c => c.toUpperCase());
       }
 
-      marker.bindPopup(
-        `<div class="popup-ville">${popupContent}</div>`,
-        { className: 'popup-ville-container' }
-      );
-      marker.openPopup();
-    });
-    marker.on('mouseout', function() { marker.closePopup(); });
+      marker.on('mouseover', function() {
+        const v = villes[marker.options._idx];
+        let popupContent = "";
+
+        if (v.valid && (v.valid.capitale || v.valid.pays)) {
+          const nomMaj = capitalizeFirstLetter(v.name);
+          const paysMaj = v.pays || v.country || "";
+          const paysMajAff = capitalizeFirstLetter(paysMaj);
+
+          if (v.valid.capitale && v.valid.pays) {
+            popupContent = `<b>${capitalizeFirstLetter(nomMaj)}</b><br><small>${capitalizeFirstLetter(paysMajAff)}</small>`;
+          } else if (v.valid.capitale) {
+            popupContent = `<b>${capitalizeFirstLetter(nomMaj)}</b>`;
+          } else if (v.valid.pays) {
+            popupContent = `<small>${capitalizeFirstLetter(paysMajAff)}</small>`;
+          }
+          marker.setPopupContent(`<div class="popup-ville">${popupContent}</div>`);
+          marker.openPopup();
+        } else {
+          marker.closePopup();
+        }
+      });
+      marker.on('mouseout', function() { marker.closePopup(); });
+      // Mets à jour la couleur du marqueur
+      const markers = nomAsciiToVilles[asciiNom];
+      if (markers) {
+        markers.forEach(marker => {
+        if (ville.valid && ville.valid.capitale && ville.valid.pays) {
+          marker.setStyle({ color: 'green', fillColor: 'green', radius: 2 });
+        } else if (ville.valid && (ville.valid.capitale || ville.valid.pays)) {
+          marker.setStyle({ color: 'orange', fillColor: 'orange', radius: 2 });
+        } else {
+          marker.setStyle({ color: 'red', fillColor: 'red', radius: 2 });
+        }
+
+          // --- Ajout : force la popup à se mettre à jour si elle est ouverte ---
+          if (marker.isPopupOpen()) {
+            marker.closePopup();
+            marker.fire('mouseover');
+          }
+        });
+      }
+      if (!ville.valid) ville.valid = {};
+        ville.valid.ville = true;
   });
 
   // Gestion de la saisie utilisateur
@@ -638,14 +673,16 @@ function demarrerQuiz() {
           lastValidatedMarkers.push(marker);
           const villeNom = marker.options._villeNom || '';
           const asciiNom = toAscii(villeNom);
-          let popupContent = villeNom;
+          let popupContent = capitalizeFirstLetter(villeNom);
           if (asciiNom !== villeNom.toLowerCase()) {
-            popupContent = `${villeNom} <br><small>${asciiNom}</small>`;
+            popupContent = `${capitalizeFirstLetter(villeNom)} <br><small>${asciiNom}</small>`;
           }
           marker.bindPopup(
             `<div class="popup-ville">${popupContent}</div>`,
             { className: 'popup-ville-container' }
           );
+          marker.on('mouseover', function() { marker.openPopup(); });
+          marker.on('mouseout', function() { marker.closePopup(); });
         }
       });
 
@@ -820,8 +857,8 @@ document.getElementById('showQuizBtn').addEventListener('click', () => {
 
     const asciiNom = toAscii(nom).toLowerCase();
     const nomMaj = nom.charAt(0).toUpperCase() + nom.slice(1);
-    let popupContent = nomMaj;
-    if (ville.pays) popupContent += `<br><small>${ville.pays}</small>`;
+    let popupContent = capitalizeFirstLetter(nomMaj);
+    if (ville.pays) popupContent += `<br><small>${capitalizeFirstLetter(ville.pays)}</small>`;
     marker.bindPopup(
       `<div class="popup-ville">${popupContent}</div>`,
       { className: 'popup-ville-container' }
@@ -865,9 +902,9 @@ document.getElementById('endQuizBtn').addEventListener('click', () => {
       const asciiNom = toAscii(villeNom);
       let popupContent;
       if (asciiNom !== villeNom.toLowerCase()) {
-        popupContent = `${villeNomMaj} <br><small>${asciiNom}</small>`;
+        popupContent = `${capitalizeFirstLetter(villeNomMaj)} <br><small>${asciiNom}</small>`;
       } else {
-        popupContent = villeNomMaj;
+        popupContent = capitalizeFirstLetter(villeNomMaj);
       }
       marker.bindPopup(
         `<div class="popup-ville">${popupContent}</div>`,
