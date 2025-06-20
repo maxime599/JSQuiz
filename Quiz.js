@@ -141,30 +141,30 @@ function getVillesSelectionnees() {
           "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
           "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
           "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
-          "tg", "tn", "ug", "zm", "zw"
+          "tg", "tn", "ug", "zm", "zw", "yt", "re"
         ],
         amerique_du_nord: [
           "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
-          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us"
+          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us", "pm", "tc", "pr", "gp","mf","bl","vi","bq","sx","aw","cw","um","mp"
         ],
         amerique_du_sud: [
-          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve"
+          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve", "gf","mq","pn"
         ],
         asie: [
           "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
           "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
           "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
-          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye"
+          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye", "hk","mo"
         ],
         europe: [
           "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
           "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
           "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
-          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va"
+          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va", "ax","sj"
         ],
         oceanie: [
           "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
-          "tv", "vu"
+          "tv", "vu", "cc","cx","nf","nc","tf","wf", "pf", "pn", "tk","gu","as"
         ]
       };
       let codes = countriesByContinent[continent] || [];
@@ -218,30 +218,30 @@ function getVillesSelectionnees() {
           "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
           "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
           "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
-          "tg", "tn", "ug", "zm", "zw"
+          "tg", "tn", "ug", "zm", "zw", "yt", "re"
         ],
         amerique_du_nord: [
           "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
-          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us"
+          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us", "pm", "tc", "pr", "gp","mf","bl","vi","bq","sx","aw","cw","um","mp"
         ],
         amerique_du_sud: [
-          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve"
+          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve", "gf","mq","pn"
         ],
         asie: [
           "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
           "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
           "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
-          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye"
+          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye", "hk","mo"
         ],
         europe: [
           "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
           "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
           "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
-          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va"
+          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va", "ax","sj"
         ],
         oceanie: [
           "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
-          "tv", "vu"
+          "tv", "vu", "cc","cx","nf","nc","tf","wf", "pf", "pn", "tk","gu","as"
         ]
       };
       let codes = countriesByContinent[continent] || [];
@@ -263,30 +263,30 @@ function getVillesSelectionnees() {
           "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
           "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
           "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
-          "tg", "tn", "ug", "zm", "zw"
+          "tg", "tn", "ug", "zm", "zw", "yt", "re"
         ],
         amerique_du_nord: [
           "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
-          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us"
+          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us", "pm", "tc", "pr", "gp","mf","bl","vi","bq","sx","aw","cw","um","mp"
         ],
         amerique_du_sud: [
-          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve"
+          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve", "gf","mq","pn"
         ],
         asie: [
           "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
           "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
           "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
-          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye"
+          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye", "hk","mo"
         ],
         europe: [
           "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
           "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
           "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
-          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va"
+          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va", "ax","sj"
         ],
         oceanie: [
           "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
-          "tv", "vu"
+          "tv", "vu", "cc","cx","nf","nc","tf","wf", "pf", "pn", "tk","gu","as"
         ]
       };
       let codes = countriesByContinent[continent] || [];
@@ -314,164 +314,58 @@ function getVillesSelectionnees() {
   if (modePays === 'one') {
     const code = document.getElementById('selectPays').value;
     data = data.filter(v => v.address && v.address.country_code === code);
-  } else if (modePays === 'continent') {
-    const continent = document.getElementById('selectContinent').value;
-    const countriesByContinent = {
-      afrique: [
-        "dz", "ao", "bj", "bw", "bf", "bi", "cm", "cv", "cf", "td", "km", "cg",
-        "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
-        "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
-        "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
-        "tg", "tn", "ug", "zm", "zw", "eh", "sh", "sz"
-      ],
-      amerique_du_nord: [
-        "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
-        "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us", "ai", "bm", "gl", "ky", "ms"
-      ],
-      amerique_du_sud: [
-        "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve", "fk"
-      ],
-      antartique: ["gs"],
-      asie: [
-        "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
-        "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
-        "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
-        "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye", "ps", "ru"
-      ],
-      europe: [
-        "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
-        "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
-        "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
-        "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va", "fo", "gg", "im",
-        "je", "gi", "vg", "tr" // Turquie incluse pour le filtrage spécial
-      ],
-      oceanie: [
-        "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
-        "tv", "vu", "ck", "nu", "tk"
-      ]
-    };
-    let codes = countriesByContinent[continent] || [];
-    if (continent === 'autres') {
-      const allKnown = Object.values(countriesByContinent).flat();
-      codes = Array.from(new Set(window.villesData.map(v => v.address?.country_code)))
-        .filter(code => !allKnown.includes(code));
+    // ...dans getVillesSelectionnees(), remplace le bloc du filtrage par continent par :
+    } else if (modePays === 'continent') {
+      const continent = document.getElementById('selectContinent').value;
+      if (continent === 'europe' || continent === 'asie') {
+        // Filtrage direct sur le champ continent de l'adresse
+        const continentLabel = continent === 'europe' ? 'Europe' : 'Asia';
+        data = data.filter(v => v.address && v.address.continent === continentLabel);
+      } else {
+        const countriesByContinent = {
+        afrique: [
+          "dz", "ao", "bj", "bw", "bf", "bi", "cm", "cv", "cf", "td", "km", "cg",
+          "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
+          "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
+          "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
+          "tg", "tn", "ug", "zm", "zw", "eh", "sh", "sz", "yt", "re"
+        ],
+        amerique_du_nord: [
+          "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
+          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us", "ai", "bm", "gl", "ky", "ms", "pm", "tc", "pr", "gp","mf","bl","vi","bq","sx","aw","cw","um","mp"
+        ],
+        amerique_du_sud: [
+          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve", "fk", "gf","mq","pn"
+        ],
+        antartique: ["gs"],
+        asie: [
+          "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
+          "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
+          "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
+          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye", "ps", "ru", "hk","mo"
+        ],
+        europe: [
+          "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
+          "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
+          "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
+          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va", "fo", "gg", "im",
+          "je", "gi", "vg", "tr", "ax","sj" // Turquie incluse pour le filtrage spécial
+        ],
+        oceanie: [
+          "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
+          "tv", "vu", "ck", "nu", "tk", "cc","cx","nf","nc","tf","wf", "pf", "pn","gu","as"
+        ]
+        };
+        let codes = countriesByContinent[continent] || [];
+        if (continent === 'autres') {
+          const allKnown = Object.values(countriesByContinent).flat();
+          codes = Array.from(new Set(window.villesData.map(v => v.address?.country_code)))
+            .filter(code => !allKnown.includes(code));
+        }
+        data = data.filter(v => v.address && codes.includes(v.address.country_code));
+      }
+      console.log('Continent sélectionné :', continent);
     }
-    // Filtrage spécial pour la Turquie en Europe
-    if (continent === 'europe') {
-      data = data.filter(v => {
-        if (!v.address || !v.address.country_code) return false;
-        if (v.address.country_code === 'tr') {
-          // Turquie : ne garder que les villes européennes
-          return (
-            v.address.province === "Kırklareli" ||
-            v.address.province === "Edirne" ||
-            v.address.district === "Tekirdağ" ||
-            v.address.province === "İstanbul"
-          );
-        } else if (v.address.country_code === 'ru') {
-          // Russie : exclure les régions asiatiques
-          return !(
-            v.address.region === "Уральский федеральный округ" ||
-            v.address.region === "Сибирский федеральный округ" ||
-            v.address.region === "Дальневосточный федеральный округ"
-          );
-        } else if (v.address.country_code === 'fr') {
-          // France : exclure les régions hors Europe
-          return !(
-            v.address.state === "Guadeloupe" ||
-            v.address.state === "Martinique" ||
-            v.address.state === "Guyane" ||
-            v.address.state === "Saint-Martin (France)" ||
-            v.address.state === "Saint-Barthélemy" ||
-            v.address.state === "La Réunion" ||
-            v.address.state === "Polynésie Française" ||
-            v.address.state === "Wallis-et-Futuna" ||
-            v.address.archipelago === "Nouvelle-Calédonie" ||
-            v.address.state === "Saint-Pierre-et-Miquelon" ||
-            v.address.state === "Mayotte"
-          );
-        } else {
-          return codes.includes(v.address.country_code);
-        }
-      });
-    } else if (continent === 'asie') {
-      data = data.filter(v => {
-        if (!v.address || !v.address.country_code) return false;
-        if (v.address.country_code === 'tr') {
-          // Turquie : exclure les villes européennes
-          return !(
-            v.address.province === "Kırklareli" ||
-            v.address.province === "Edirne" ||
-            v.address.district === "Tekirdağ" ||
-            v.address.province === "İstanbul"
-          );
-        } else if (v.address.country_code === 'ru') {
-          // Russie : inclure seulement les régions asiatiques
-          return (
-            v.address.region === "Уральский федеральный округ" ||
-            v.address.region === "Сибирский федеральный округ" ||
-            v.address.region === "Дальневосточный федеральный округ"
-          );
-        } else if (v.address.country_code === 'fr') {
-          // France : aucune région française en Asie
-          return false;
-        } else {
-          return codes.includes(v.address.country_code);
-        }
-      });
-    } else if (continent === 'afrique') {
-      data = data.filter(v => {
-        if (!v.address || !v.address.country_code) return false;
-        if (v.address.country_code === 'fr') {
-          // France : inclure seulement La Réunion
-          return (
-            v.address.state === "La Réunion" ||
-            v.address.state === "Mayotte"
-          );
-        } else {
-          return codes.includes(v.address.country_code);
-        }
-      });
-    } else if (continent === 'amerique_du_sud') {
-      data = data.filter(v => {
-        if (!v.address || !v.address.country_code) return false;
-        if (v.address.country_code === 'fr') {
-          // France : inclure seulement Guyane
-          return v.address.state === "Guyane";
-        } else {
-          return codes.includes(v.address.country_code);
-        }
-      });
-    } else if (continent === 'amerique_du_nord') {
-      data = data.filter(v => {
-        if (!v.address || !v.address.country_code) return false;
-        if (v.address.country_code === 'fr') {
-          // France : inclure seulement Saint-Pierre-et-Miquelon
-          return v.address.state === "Saint-Pierre-et-Miquelon";
-        } else {
-          return codes.includes(v.address.country_code);
-        }
-      });
-    } else if (continent === 'oceanie') {
-      data = data.filter(v => {
-        if (!v.address || !v.address.country_code) return false;
-        if (v.address.country_code === 'fr') {
-          // France : inclure Polynésie Française, Wallis-et-Futuna, Nouvelle-Calédonie
-          return (
-            v.address.state === "Polynésie Française" ||
-            v.address.state === "Wallis-et-Futuna" ||
-            v.address.archipelago === "Nouvelle-Calédonie"
-          );
-        } else {
-          return codes.includes(v.address.country_code);
-        }
-      });
-    } else {
-      data = data.filter(v => v.address && codes.includes(v.address.country_code));
-    }
-    console.log('Continent sélectionné :', continent);
-    console.log('Codes ISO trouvés :', codes);
-  }
 
   if (document.getElementById('modePopulation').checked) {
     const minPop = parseInt(document.getElementById('minPopulation').value, 10);
@@ -800,30 +694,30 @@ document.getElementById('showQuizBtn').addEventListener('click', () => {
           "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
           "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
           "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
-          "tg", "tn", "ug", "zm", "zw"
+          "tg", "tn", "ug", "zm", "zw", "yt", "re"
         ],
         amerique_du_nord: [
           "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
-          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us"
+          "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us", "pm", "tc", "pr", "gp","mf","bl","vi","bq","sx","aw","cw","um","mp"
         ],
         amerique_du_sud: [
-          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve"
+          "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve", "gf","mq","pn"
         ],
         asie: [
           "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
           "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
           "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
-          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye"
+          "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye", "hk","mo"
         ],
         europe: [
           "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
           "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
           "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
-          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va"
+          "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va", "ax","sj"
         ],
         oceanie: [
           "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
-          "tv", "vu"
+          "tv", "vu", "cc","cx","nf","nc","tf","wf", "pf", "pn", "tk","gu","as"
         ]
       };
       let codes = countriesByContinent[continent] || [];
@@ -941,30 +835,30 @@ function getPaysList() {
       "cd", "ci", "dj", "eg", "gq", "er", "et", "ga", "gm", "gh", "gn", "gw",
       "ke", "ls", "lr", "ly", "mg", "mw", "ml", "mr", "mu", "ma", "mz", "na",
       "ne", "ng", "rw", "st", "sn", "sc", "sl", "so", "za", "ss", "sd", "tz",
-      "tg", "tn", "ug", "zm", "zw"
+      "tg", "tn", "ug", "zm", "zw", "yt", "re"
     ],
     amerique_du_nord: [
       "ag", "bs", "bb", "bz", "ca", "cr", "cu", "dm", "do", "sv", "gd", "gt",
-      "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us"
+      "ht", "hn", "jm", "mx", "ni", "pa", "kn", "lc", "vc", "tt", "us", "pm", "tc", "pr", "gp","mf","bl","vi","bq","sx","aw","cw","um","mp"
     ],
     amerique_du_sud: [
-      "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve"
+      "ar", "bo", "br", "cl", "co", "ec", "gy", "py", "pe", "sr", "uy", "ve", "gf","mq","pn"
     ],
     asie: [
       "af", "am", "az", "bh", "bd", "bt", "bn", "kh", "cn", "cy", "ge", "in",
       "id", "ir", "iq", "il", "jp", "jo", "kz", "kw", "kg", "la", "lb", "my",
       "mv", "mn", "mm", "np", "om", "pk", "ph", "qa", "sa", "sg", "kr", "kp",
-      "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye"
+      "lk", "sy", "tw", "tj", "th", "tl", "tr", "tm", "ae", "uz", "vn", "ye", "hk","mo"
     ],
     europe: [
       "al", "ad", "at", "by", "be", "ba", "bg", "hr", "cz", "dk", "ee", "fi",
       "fr", "de", "gr", "hu", "is", "ie", "it", "xk", "lv", "li", "lt", "lu",
       "mt", "md", "mc", "me", "nl", "mk", "no", "pl", "pt", "ro", "ru", "sm",
-      "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va"
+      "rs", "sk", "si", "es", "se", "ch", "ua", "gb", "va", "ax","sj"
     ],
     oceanie: [
       "au", "fj", "ki", "mh", "fm", "nr", "nz", "pw", "pg", "ws", "sb", "to",
-      "tv", "vu"
+      "tv", "vu", "cc","cx","nf","nc","tf","wf", "pf", "pn", "tk","gu","as"
     ]
   };
 
@@ -975,6 +869,7 @@ function getPaysList() {
     if (continent === 'autres') {
       const allKnown = Object.values(countriesByContinent).flat();
       continentCodes = filteredCodes.filter(code => !allKnown.includes(code));
+      console.log("Codes ISO des pays dans 'autres' :", continentCodes);
     } else {
       continentCodes = continentCodes.filter(code => filteredCodes.includes(code));
     }

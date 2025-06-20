@@ -1,0 +1,200 @@
+import json
+import re
+from tqdm import tqdm
+import unicodedata
+
+def normalize_name(name):
+    # Minuscule, sans accents, sans espaces/tirets
+    name = name.lower()
+    name = ''.join(
+        c for c in unicodedata.normalize('NFD', name)
+        if unicodedata.category(c) != 'Mn'
+    )
+    name = name.replace(' ', '').replace('-', '')
+    return name
+
+def parse_city_line(line, other_names_dict=None, changed_counter=None):
+    fields = line.strip().split('\t')
+    if len(fields) < 19:
+        return None
+
+    feature_class = fields[6]
+    feature_code = fields[7]
+
+    if feature_class != 'P':
+        return None
+    if feature_code not in {'PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLC'}:
+        return None
+
+    pop_str = fields[14]
+    if not pop_str.isdigit():
+        return None
+    population = int(pop_str)
+    if population == 0:
+        return None
+
+    name_ascii = fields[2]
+    name_standard = fields[1]
+
+    latitude = float(fields[4])
+    longitude = float(fields[5])
+    country_code = fields[8].lower()
+    admin1_code = fields[10]
+    admin2_code = fields[11]
+    admin3_code = fields[12]
+
+    # Filtre spécial Paris
+    if country_code == "fr" and admin1_code == "11" and admin2_code == "75" and admin3_code == "751":
+        if name_ascii.strip().lower() != "paris":
+            return None
+
+    # Filtre spécial Istanbul : enlève les quartiers (ne garde que la ville principale)
+    # Istanbul = admin1_code == "34", admin2_code == "34", admin3_code == "340"
+    if country_code == "tr" and admin1_code == "34":
+        # On ne garde que la ville principale (nom ascii "Istanbul")
+        if name_ascii.strip().lower() != "istanbul":
+            return None
+
+    # Filtre spécial New York City : enlève les quartiers (ne garde que la ville principale)
+    if (
+        country_code == "us"
+        and (admin1_code == "NY" or admin1_code == "36")
+        and (admin2_code == "061" or admin3_code == "51000")
+    ):
+        if name_ascii.strip().lower() != "new york city":
+            return None
+
+    # Filtre spécial pour les boroughs de New York City : enlève Brooklyn, Queens, The Bronx, Manhattan, Staten Island
+    if (
+        country_code == "us"
+        and (admin1_code == "NY" or admin1_code == "36")
+        and name_ascii.strip().lower() in {"brooklyn", "queens", "the bronx", "manhattan", "staten island"}
+    ):
+        return None
+
+    # Filtre spécial London : enlève les quartiers (ne garde que la ville principale)
+    # London = admin1_code == "ENG" ou "H9" (selon la base), admin2_code == "H9", admin3_code == "00AA" ou "00BB" etc.
+    if (
+        country_code == "gb"
+        and (admin1_code == "ENG" or admin1_code == "H9")
+        and (admin2_code == "H9" or (admin3_code and admin3_code.startswith("00")))
+    ):
+        if name_ascii.strip().lower() != "london":
+            return None
+
+    continent_full = fields[-2]
+    continent = continent_full.split('/')[0] if '/' in continent_full else continent_full
+
+    if country_code == "tr":
+        european_admin1 = {"39", "22", "59", "34"}
+        if admin1_code not in european_admin1:
+            continent = "Asia"
+        else:
+            continent = "Europe"
+
+    address = {
+        "country_code": country_code,
+        "continent": continent
+    }
+
+    result = {
+        "name": name_ascii,
+        "address": address,
+        "population": population,
+        "location": [longitude, latitude]
+    }
+
+    # Recherche améliorée pour name:fr
+    if other_names_dict:
+        keys_to_try = [
+            name_ascii.lower(),
+            name_standard.lower(),
+            normalize_name(name_ascii),
+            normalize_name(name_standard)
+        ]
+        found = False
+        for key in keys_to_try:
+            fr_list = other_names_dict.get(key)
+            if fr_list:
+                for fr_name_tuple in fr_list:
+                    if isinstance(fr_name_tuple, tuple):
+                        fr_name, fr_country_code = fr_name_tuple
+                        if fr_name and fr_country_code.lower() == country_code.lower():
+                            result["name:fr"] = fr_name
+                            if changed_counter is not None:
+                                changed_counter[0] += 1
+                            found = True
+                            break
+                    else:
+                        if fr_name_tuple:
+                            result["name:fr"] = fr_name_tuple
+                            if changed_counter is not None:
+                                changed_counter[0] += 1
+                            found = True
+                            break
+            if found:
+                break
+
+    return result
+
+def load_other_names(json_path):
+    with open(json_path, 'r', encoding='utf-8') as f:
+        cities = json.load(f)
+    other_names_dict = {}
+    for city in cities:
+        other = city.get("other_names", {})
+        name_fr = other.get("name:fr")
+        city_country_code = ""
+        if "address" in city and "country_code" in city["address"]:
+            city_country_code = city["address"]["country_code"].lower()
+        # Ajoute toutes les valeurs de other_names comme clés possibles
+        for val in other.values():
+            if not isinstance(val, str):
+                continue
+            for variant in [val.lower(), normalize_name(val)]:
+                if variant not in other_names_dict:
+                    other_names_dict[variant] = []
+                if name_fr:
+                    other_names_dict[variant].append((name_fr, city_country_code))
+        # Ajoute aussi le champ "name" à la racine
+        if "name" in city:
+            for variant in [city["name"].lower(), normalize_name(city["name"])]:
+                if variant not in other_names_dict:
+                    other_names_dict[variant] = []
+                if name_fr:
+                    other_names_dict[variant].append((name_fr, city_country_code))
+    return other_names_dict
+
+def convert_file_to_json(input_file, output_file, cities_json_path):
+    other_names_dict = load_other_names(cities_json_path)
+    with open(input_file, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+
+    results = []
+    continents = set()
+    all_country_codes = set()
+    changed_counter = [0]
+    for line in tqdm(lines, desc="Filtrage des villes"):
+        city = parse_city_line(line, other_names_dict, changed_counter)
+        if city:
+            results.append(city)
+            continent = city["address"].get("continent")
+            if continent:
+                continents.add(continent)
+            code = city["address"].get("country_code")
+            if code:
+                all_country_codes.add(code)
+
+    print("Continents trouvés :", sorted(continents))
+    print("Nombre de noms changés :", changed_counter[0])
+
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write("window.villesData = ")
+        json.dump(results, f, ensure_ascii=False, indent=2)
+
+# Exemple d'utilisation
+convert_file_to_json(
+    'C:/Users/Rog/Downloads/allCountries/allCountries.txt',
+    'cities.js',
+    'cities.json'
+)
